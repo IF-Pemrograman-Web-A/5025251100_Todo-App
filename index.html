@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyTodo UI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="app-header">
+        <h1>MyTodo</h1>
+        <p>Web manajemen keseharian yang cocok untuk kamu</p>
+    </header>
+
+    <div class="layout-wrapper">
+        <main class="todo-list-panel">
+            <section class="create-todo">
+                <h2>Buat list tugas baru</h2>
+                <form class="todo-form" action="#" method="POST">
+                    <input type="text" placeholder="Apa yang anda mau lakukan?" required>
+                    <button type="submit">Tambahkan</button>
+                </form>
+            </section>
+
+            <section class="list-container">
+                <h2>Tugas saat ini</h2>
+                <ul class="todo-list">
+                    <li class="todo-item active">
+                        <label>
+                            <input type="checkbox">
+                            <span class="task-name">Mengerjakan tugas Pemrograman Web</span>
+                        </label>
+                    </li>
+                    <li class="todo-item">
+                        <label>
+                            <input type="checkbox">
+                            <span class="task-name">Menyelesaikan pra-praktikum Jaringan Komputer</span>
+                        </label>
+                    </li>
+                    <li class="todo-item">
+                        <label>
+                            <input type="checkbox" checked>
+                            <span class="task-name">Update website portofolio </span>
+                        </label>
+                    </li>
+                    <li class="todo-item">
+                        <label>
+                            <input type="checkbox">
+                            <span class="task-name">Menyelesaikan modul warmup PBO</span>
+                        </label>
+                    </li>
+                    <li class="todo-item">
+                        <label>
+                            <input type="checkbox">
+                            <span class="task-name">Mengulik kaggle LBE MCI</span>
+                        </label>
+                    </li>
+                </ul>
+            </section>
+        </main>
+
+        <aside class="todo-detail-panel">
+            <h2>Editor Tugas</h2>
+            <form class="edit-form" action="#" method="POST">
+                <div class="form-group">
+                    <label for="task-title">Judul</label>
+                    <input type="text" id="task-title" value="Mengerjakan tugas Pemrograman Web" required>
+                </div>
+                <div class="form-group">
+                    <label for="task-desc">Deskripsi</label>
+                    <textarea id="task-desc" rows="6">Mengerjakan tugas Pemrograman Web yang harus membuat website statis berupa Todo List yang harus responsif pada mobile & desktop.</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="task-status">Status</label>
+                    <select id="task-status">
+                        <option>In Progress</option>
+                        <option>Pending</option>
+                        <option>Completed</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary">Hapus Tugas</button>
+                    <button type="submit" class="btn-primary">Simpan Perubahan</button>
+                </div>
+            </form>
+        </aside>
+    </div>
+
+    <footer class="app-footer">
+        <p>&copy; 2026 Copyright YuHaRa. All rights reserved.</p>
+    </footer>
+</body>
+</html>
