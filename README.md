@@ -2,7 +2,7 @@
 Static web for Todo list, 2nd task for Pemrograman Web class course
 
 ## Identitas
-![profile] (assets/profile.jpeg)
+![profile](assets/profile.jpeg)
 
 |    NRP     |         Nama          |    Kelas    |
 | :--------: | :-------------------: | :---------: |
@@ -34,13 +34,13 @@ Komponen yang menampilkan tugas terkini dengan fitur visual status checkbox dan 
 Komponen form yang menjadi penyunting interaktif yang memuat field judul, area deskripsi, selektor status, dan tombol hapus maupun simpan.
 
 ## Preview Todo App
-![desc] (assets/desc.png)
+![desc](assets/desc.png)
 
 ### Preview Fitur Create
-![create] (assets/create.png)
+![create](assets/create.png)
 
 ### Preview Fitur List
-![list] (assets/list.png)
+![list](assets/list.png)
 
 ### Preview Fitur Editor
-![editor] (assets/editor.png)
+![editor](assets/editor.png)
