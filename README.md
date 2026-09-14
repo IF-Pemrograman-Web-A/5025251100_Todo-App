@@ -2,7 +2,6 @@
 Static web for Todo list, 2nd task for Pemrograman Web class course
 
 ## Identitas
-<img width ="50%" height="200" alt="profile" src="assets/profile.jpeg" />
 
 |    NRP     |         Nama          |    Kelas    |
 | :--------: | :-------------------: | :---------: |
