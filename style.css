@@ -80,6 +80,13 @@ body {
     }
 }
 
+.todo-form-submit {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
 h2 {
     margin-top: 0;
     font-size: 1.25rem;
