@@ -1,4 +1,4 @@
-const CACHE_NAME = 'taskmaster-cache-v1';
+const CACHE_NAME = 'MyToDo-cache-v1';
 const urlsToCache = [
   './',
   './index.html',

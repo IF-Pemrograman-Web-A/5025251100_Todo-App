@@ -3,45 +3,6 @@ const STORE_NAME = 'todos';
 let db;
 let activeTodoId = null;
 
-const defaultTodos = [
-    { 
-        id: 1, 
-        title: "Mengerjakan tugas Pemrograman Web", 
-        desc: "Mengerjakan tugas dan modul terkait pengembangan web.", 
-        status: "In Progress", 
-        completed: false 
-    },
-    { 
-        id: 2, 
-        title: "Menyelesaikan pra-praktikum Jaringan Komputer", 
-        desc: "Mengerjakan soal-soal pendahuluan sebelum sesi praktikum Jarkom dimulai.", 
-        status: "Pending", 
-        completed: false 
-    },
-    { 
-        id: 3, 
-        title: "Update website portofolio", 
-        desc: "Melakukan pembaruan kode, styling, atau konten proyek pada repository portofolio.", 
-        status: "Completed", 
-        completed: true 
-    },
-    { 
-        id: 4, 
-        title: "Menyelesaikan modul warmup PBO", 
-        desc: "Mempelajari dan menyelesaikan latihan dasar Pemrograman Berorientasi Objek.", 
-        status: "Pending", 
-        completed: false 
-    },
-    { 
-        id: 5, 
-        title: "Mengulik kaggle LBE MCI", 
-        desc: "Eksplorasi dataset, analisis data, atau melatih model machine learning di platform Kaggle.", 
-        status: "Pending", 
-        completed: false 
-    }
-];
-
-let todos = JSON.parse(JSON.stringify(defaultTodos));
 const todoListEl = document.getElementById('todo-list');
 const createForm = document.getElementById('create-form');
 const newTodoTitle = document.getElementById('new-todo-title');
@@ -59,12 +20,23 @@ const deleteTaskBtn = document.getElementById('delete-task-btn');
 const imagePreviewContainer = document.getElementById('image-preview-container');
 const taskImagePreview = document.getElementById('task-image-preview');
 
+function escapeHtml(str) {
+    if (!str) return '';
+    return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 function initTheme() {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
         document.body.classList.add('dark-mode');
     }
 }
+
 themeToggleBtn.addEventListener('click', () => {
     const isDark = document.body.classList.toggle('dark-mode');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
@@ -93,7 +65,7 @@ function getAllTodos() {
         const tx = db.transaction(STORE_NAME, 'readonly');
         const store = tx.objectStore(STORE_NAME);
         const request = store.getAll();
-        request.onsuccess = () => resolve(request.result.sort((a,b) => b.id - a.id));
+        request.onsuccess = () => resolve(request.result.sort((a, b) => b.id - a.id));
     });
 }
 
@@ -125,14 +97,16 @@ async function renderTodos() {
         const li = document.createElement('li');
         li.className = `todo-item ${todo.id === activeTodoId ? 'active' : ''} ${todo.completed ? 'task-completed' : ''}`;
         
+        const safeTitle = escapeHtml(todo.title);
+
         li.innerHTML = `
-            <label class="todo-content" onclick="selectTodo(${todo.id})" aria-label="Select task ${todo.title}">
-                <input type="checkbox" onchange="toggleComplete(event, ${todo.id})" ${todo.completed ? 'checked' : ''} aria-label="Mark ${todo.title} as completed">
-                <span class="task-name">${todo.title}</span>
+            <label class="todo-content" onclick="selectTodo(${todo.id})" aria-label="Pilih tugas ${safeTitle}">
+                <input type="checkbox" onchange="toggleComplete(event, ${todo.id})" ${todo.completed ? 'checked' : ''} aria-label="Tandai ${safeTitle} selesai">
+                <span class="task-name">${safeTitle}</span>
             </label>
             <div class="todo-actions">
-                <button class="btn-small" onclick="selectTodo(${todo.id})" aria-label="Edit task ${todo.title}">Edit</button>
-                <button class="btn-small btn-secondary" onclick="deleteTodo(${todo.id})" aria-label="Delete task ${todo.title}">Delete</button>
+                <button class="btn-small" onclick="selectTodo(${todo.id})" aria-label="Edit tugas ${safeTitle}">Edit</button>
+                <button class="btn-small btn-secondary" onclick="deleteTodo(${todo.id})" aria-label="Hapus tugas ${safeTitle}">Hapus</button>
             </div>
         `;
         todoListEl.appendChild(li);
@@ -167,7 +141,7 @@ createForm.addEventListener('submit', async (e) => {
     await saveTodoToDB(newTodo);
     
     createForm.reset();
-    announceToScreenReader('New task created successfully.');
+    announceToScreenReader('Tugas baru berhasil dibuat.');
     
     if (notifyTime && Notification.permission !== "granted") {
         Notification.requestPermission();
@@ -230,8 +204,15 @@ editForm.addEventListener('submit', async (e) => {
         todo.completed = (editStatusSelect.value === 'Completed');
         
         await saveTodoToDB(todo);
-        announceToScreenReader('Task updated successfully.');
+        announceToScreenReader('Tugas berhasil diperbarui.');
         renderTodos();
+    }
+});
+
+deleteTaskBtn.addEventListener('click', async () => {
+    const id = parseInt(editIdInput.value);
+    if (id) {
+        await deleteTodo(id);
     }
 });
 
@@ -247,7 +228,7 @@ window.deleteTodo = async function(id) {
         deleteTaskBtn.disabled = true;
         imagePreviewContainer.style.display = 'none';
     }
-    announceToScreenReader('Task deleted.');
+    announceToScreenReader('Tugas berhasil dihapus.');
     renderTodos();
 };
 
@@ -260,7 +241,7 @@ window.toggleComplete = async function(event, id) {
         todo.completed = event.target.checked;
         todo.status = todo.completed ? "Completed" : "In Progress";
         await saveTodoToDB(todo);
-        announceToScreenReader(`Task marked as ${todo.status}`);
+        announceToScreenReader(`Tugas ditandai sebagai ${todo.status}`);
         renderTodos();
     }
 };
@@ -284,7 +265,7 @@ setInterval(async () => {
             if (now >= timeToNotify) {
                 if (Notification.permission === 'granted') {
                     navigator.serviceWorker.ready.then((reg) => {
-                        reg.showNotification('TaskMaster Reminder!', {
+                        reg.showNotification('Pengingat Tugas!', {
                             body: todo.title,
                             icon: todo.image || null,
                             vibrate: [200, 100, 200]
