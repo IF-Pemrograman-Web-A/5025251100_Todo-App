@@ -3,6 +3,7 @@ const STORE_NAME = 'todos';
 let db;
 let activeTodoId = null;
 
+const fileNameDisplay = document.getElementById('file-name-display');
 const todoListEl = document.getElementById('todo-list');
 const createForm = document.getElementById('create-form');
 const newTodoTitle = document.getElementById('new-todo-title');
@@ -115,6 +116,14 @@ async function renderTodos() {
     if (activeTodoId) fillEditorForm(activeTodoId);
 }
 
+todoImageInput.addEventListener('change', function() {
+    if (this.files && this.files.length > 0) {
+        fileNameDisplay.textContent = this.files[0].name;
+    } else {
+        fileNameDisplay.textContent = 'Tidak ada file';
+    }
+});
+
 createForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const title = newTodoTitle.value.trim();
@@ -141,6 +150,7 @@ createForm.addEventListener('submit', async (e) => {
     await saveTodoToDB(newTodo);
     
     createForm.reset();
+    fileNameDisplay.textContent = 'Tidak ada file';
     announceToScreenReader('Tugas baru berhasil dibuat.');
     
     if (notifyTime && Notification.permission !== "granted") {
