@@ -30,24 +30,24 @@
                     </div>
                     <div class="form-row">
                         <div class="input-group">
-                            <label for="todo-image" class="a11y-label">Foto Bukti</label>
+                            <label for="todo-image" class="a11y-label">Foto Tugas</label>
                             <input type="file" id="todo-image" accept="image/*" capture="environment" aria-label="Ambillah foto untuk tugas anda">
                         </div>
                         <div class="input-group">
                             <label for="todo-time" class="a11y-label">Jadwal Notifikasi</label>
                             <input type="datetime-local" id="todo-time" aria-label="Atur waktu notifikasi">
                         </div>
+                        <div class="todo-form-submit">
+                            <button type="submit" class="btn-primary">Tambahkan Tugas</button>
+                        </div>
                     </div>
-                    <button type="submit" class="btn-primary">Tambahkan Tugas</button>
                 </form>
             </section>
-
             <section class="list-container" aria-labelledby="list-heading">
                 <h2 id="list-heading">Tugas saat ini</h2>
                 <ul id="todo-list" class="todo-list" aria-live="polite" aria-atomic="false"></ul>
             </section>
         </main>
-
         <aside class="todo-detail-panel" role="complementary" aria-labelledby="editor-heading">
             <h2 id="editor-heading">Editor Tugas</h2>
             <form id="edit-form" class="edit-form">
@@ -69,7 +69,7 @@
                     </select>
                 </div>
                 <div class="form-group image-preview-container" id="image-preview-container" aria-hidden="true" style="display: none;">
-                    <span class="a11y-label">Foto Bukti:</span>
+                    <span class="a11y-label">Foto Tugas:</span>
                     <img id="task-image-preview" src="" alt="Foto Tugas">
                 </div>
                 <div class="form-actions">
@@ -79,13 +79,10 @@
             </form>
         </aside>
     </div>
-
     <div id="a11y-announcer" class="sr-only" aria-live="assertive"></div>
-
     <footer class="app-footer" role="contentinfo">
         <p>&copy; 2026 Copyright YuHaRa. All rights reserved.</p>
     </footer>
-
     <script src="script.js"></script>
 </body>
 </html>
