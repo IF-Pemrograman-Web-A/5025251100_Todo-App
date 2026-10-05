@@ -210,6 +210,7 @@ input[type="file"]::file-selector-button:hover {
 }
 
 .todo-form input[type="file"] {
+    padding: 10rem;
     font-size: 0.875rem;
 }
 
