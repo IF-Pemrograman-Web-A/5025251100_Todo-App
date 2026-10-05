@@ -188,6 +188,7 @@ input[type="text"], input[type="datetime-local"], textarea, select {
 }
 
 input[type="file"] {
+    color: transparent;
     padding: 0.35rem 0.5rem; 
     cursor: pointer;
 }
