@@ -21,12 +21,14 @@ Proyek ini terdiri dari dua file utama yang saling terpisah antara struktur data
 
 - style.css: Menyimpan variabel warna, tata letak Flexbox, dan aturan responsive breakpoint.
 
-- script.js: Logika memanipulasi DOM, manajemen state tugas, dan fungsionalitas ganti tema
+- script.js: Logika memanipulasi DOM, manajemen state tugas, dan fungsionalitas ganti tema.
+
+- sw.js: Bertindak sebagai service worker website.
 
 ### Fitur Antarmuka
 
 #### 1. Form Pembuatan Tugas
-Komponen form independen di bagian atas panel kiri yang memungkinkan pengguna memasukkan judul tugas baru melalui input teks terintegrasi dan tombol penambahan (Tambahkan).
+Komponen form independen di bagian atas panel kiri yang memungkinkan pengguna memasukkan judul, foto, dan tanggal tugas baru melalui input teks terintegrasi dan tombol penambahan (Tambahkan).
 
 #### 2. Daftar Tugas
 Komponen yang menampilkan tugas terkini dengan fitur visual status checkbox dan indikator aktif.
@@ -35,7 +37,10 @@ Komponen yang menampilkan tugas terkini dengan fitur visual status checkbox dan 
 Komponen form yang menjadi penyunting interaktif yang memuat field judul, area deskripsi, selektor status, dan tombol hapus maupun simpan.
 
 #### 4. Toggle Light/Dark Button
-Komponen tembol yang mampu mengganti tema latar belakang aplikasi menjadi cerah/gelap sesuai dengan preferensi pengguna
+Komponen tombol yang mampu mengganti tema latar belakang aplikasi menjadi cerah/gelap sesuai dengan preferensi pengguna.
+
+#### 5. Aksesibilitas menggunakan Aria
+Aksesibilitas label aria agar website dapat menjangkau lebih banyak pengguna dari berbagai kalangan.
 
 ## Preview Todo App
 ![desc](assets/desc.png)
@@ -54,6 +59,12 @@ Komponen tembol yang mampu mengganti tema latar belakang aplikasi menjadi cerah/
 
 ### Preview Edit/Delete (New)
 ![newbutton](assets/editdeletebutton.png)
+
+### Preview Pelengkap fitur Add
+![pelengkap](assets/complete.png)
+
+### Preview Aria Accessibility
+![aria](assets/aria.png)
 
 ### URL Website
 [Klik disini](https://if-pemrograman-web-a.github.io/5025251100_Todo-App/)
