@@ -56,7 +56,7 @@ $todos = $stmt->fetchAll();
         <div class="header-content">
             <div class="header-text">
                 <h1>MyTodo</h1>
-                <p>Iron Citadel Organizational Task Manager</p>
+                <p>Your Personal Task Manager</p>
             </div>
         </div>
     </header>
