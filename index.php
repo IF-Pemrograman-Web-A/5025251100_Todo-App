@@ -112,7 +112,7 @@ $todos = $stmt->fetchAll();
                                     <?php endif; ?>
                                 </div>
                                 <div class="todo-actions">
-                                    <a href="delete.php?id=<?= $todo['id'] ?>&tab=<?= $currentTab ?>" class="btn-small btn-secondary" onclick="return confirm('Yakin ingin menghapus tugas ini?')">Hapus</a>
+                                    <button class="btn-small btn-secondary" onclick="if(confirm('Yakin ingin menghapus tugas ini?')) { window.location.href='delete.php?id=<?= $todo['id'] ?>&tab=<?= $currentTab ?>'; }">Hapus</button>
                                 </div>
                             </li>
                         <?php endforeach; ?>
