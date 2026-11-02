@@ -32,6 +32,11 @@ Proyek ini dibangun secara modular untuk memudahkan pengelolaan komponen dan int
 - **`data.sql`**: Berkas skema struktur tabel basis data dan data awal dummy.
 - **`assets/css/style.css`**: Menyimpan variabel warna (Light/Dark mode), tata letak Flexbox/Grid, serta *responsive breakpoints*.
 - **`assets/uploads/`**: Direktori penyimpanan file bukti foto tugas (*File Handling*).
+- **`manifest.json`** : Web App Manifest (nama, ikon, theme color, start_url)
+- **`sw.js`**         : Service Worker (precache app shell + strategi caching)
+- **`offline.html`**  : Halaman fallback saat offline
+- **`assets/icons/`** : Ikon 192, 512, dan maskable
+- **`assets/js/script.js`** : Tema, notifikasi, registrasi SW, tombol install
 
 ---
 
@@ -55,6 +60,16 @@ Proyek ini dibangun secara modular untuk memudahkan pengelolaan komponen dan int
 ### 4. Aksesibilitas (ARIA) & Tema Responsif
 - Memanfaatkan atribut `aria-label`, `aria-required`, dan `role` untuk mendukung *Screen Reader*.
 - Fitur *Toggle Light/Dark Mode* yang responsif dan nyaman digunakan di berbagai ukuran layar.
+
+### 5. Caching
+- Memungkinkan pengguna untuk bisa mengakses halaman yang sudah dicache dalam keadaan tanpa jaringan. Dengan Caching strategy demikian:
+
+|Resource |	Strategi |	Alasan|
+|:-------:|:--------:|:------:|
+|`offline.html`, CSS, JS, manifest, ikon | Precache + Stale-While-Revalidate | Inti app shell, harus selalu tersedia|
+|Halaman `index.php` | Network-First, fallback cache, lalu `offline.html` | Data dari DB harus fresh|
+|Foto di `assets/uploads/` | Cache-First | Nama file md5 tidak berubah|
+|POST, `delete.php` | Network-only | Tulis/hapus data tidak boleh dari cache|
 
 ---
 
@@ -84,6 +99,15 @@ Proyek ini dibangun secara modular untuk memudahkan pengelolaan komponen dan int
 
 ### Preview Menu Navigasi
 ![navigasi](assets/navigasi.png)
+
+### Preview Download
+![download](assets/download.png)
+
+### Preview Caching
+![cache](assets/cache.png)
+
+### Preview Offline Page
+![offline](assets/offline.png)
 
 ### URL Website
 [Klik disini](https://if-pemrograman-web-a.github.io/5025251100_Todo-App/)
