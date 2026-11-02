@@ -1,0 +1,32 @@
+{
+    "name": "MyTodo - Organizational Task Manager",
+    "short_name": "MyTodo",
+    "description": "Aplikasi todo list Personal & Shared yang bisa dipakai offline.",
+    "start_url": "index.php?tab=personal",
+    "scope": "./",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "background_color": "#F3F4F6",
+    "theme_color": "#4F46E5",
+    "lang": "id",
+    "icons": [
+        {
+            "src": "assets/icons/maskable_icon_x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "assets/icons/maskable_icon_x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "assets/icons/maskable_icon_x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

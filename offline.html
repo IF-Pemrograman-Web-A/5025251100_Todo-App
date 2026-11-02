@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+            content="width=device-width, initial-scale=1.0">
+        <title>Offline - MyTodo</title>
+        <style>
+            :root {
+                color-scheme: light dark;
+            }
+
+            body {
+                font-family: system-ui, sans-serif;
+                display: grid;
+                place-items: center;
+                min-height: 100vh;
+                margin: 0;
+                padding: 1rem;
+                text-align: center;
+            }
+
+            h1 {
+                color: #4F46E5;
+            }
+
+            button {
+                padding: .75rem 1.5rem;
+                border: 0;
+                border-radius: .5rem;
+                background: #4F46E5;
+                color: #fff;
+                font-weight: 600;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+
+    <body>
+        <main>
+            <h1>Anda sedang offline</h1>
+            <p>Sinyal hilang tenggelam di laut. Halaman ini belum tersimpan di perangkat.<br> Halaman yang pernah Anda buka tetap bisa diakses.</p>
+            <button onclick="location.reload()">Coba lagi</button>
+        </main>
+    </body>
+
+</html>
