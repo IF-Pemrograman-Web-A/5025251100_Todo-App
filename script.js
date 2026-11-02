@@ -2,12 +2,14 @@ const DB_NAME = 'MyToDoDB';
 const STORE_NAME = 'todos';
 let db;
 let activeTodoId = null;
+let activeCameraStream = null; 
 
 const fileNameDisplay = document.getElementById('file-name-display');
 const todoListEl = document.getElementById('todo-list');
 const createForm = document.getElementById('create-form');
 const newTodoTitle = document.getElementById('new-todo-title');
 const todoImageInput = document.getElementById('todo-image');
+const cameraCaptureBtn = document.getElementById('camera-capture-btn');
 const todoTimeInput = document.getElementById('todo-time');
 const themeToggleBtn = document.getElementById('theme-toggle');
 const announcer = document.getElementById('a11y-announcer');
@@ -62,27 +64,42 @@ function initDB() {
 }
 
 function getAllTodos() {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
+        if (!db) return reject(new Error("Database belum diinisialisasi"));
         const tx = db.transaction(STORE_NAME, 'readonly');
         const store = tx.objectStore(STORE_NAME);
         const request = store.getAll();
+        
         request.onsuccess = () => resolve(request.result.sort((a, b) => b.id - a.id));
+        request.onerror = (e) => reject(e.target.error);
+        tx.onerror = (e) => reject(tx.target.error);
+        tx.onabort = (e) => reject(tx.error);
     });
 }
 
 function saveTodoToDB(todo) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
+        if (!db) return reject(new Error("Database belum diinisialisasi"));
         const tx = db.transaction(STORE_NAME, 'readwrite');
-        tx.objectStore(STORE_NAME).put(todo);
+        const request = tx.objectStore(STORE_NAME).put(todo);
+        
         tx.oncomplete = () => resolve();
+        request.onerror = (e) => reject(e.target.error);
+        tx.onerror = (e) => reject(tx.target.error);
+        tx.onabort = (e) => reject(tx.error);
     });
 }
 
 function deleteTodoFromDB(id) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
+        if (!db) return reject(new Error("Database belum diinisialisasi"));
         const tx = db.transaction(STORE_NAME, 'readwrite');
-        tx.objectStore(STORE_NAME).delete(id);
+        const request = tx.objectStore(STORE_NAME).delete(id);
+        
         tx.oncomplete = () => resolve();
+        request.onerror = (e) => reject(e.target.error);
+        tx.onerror = (e) => reject(tx.target.error);
+        tx.onabort = (e) => reject(tx.error);
     });
 }
 
@@ -91,30 +108,62 @@ function announceToScreenReader(message) {
 }
 
 async function renderTodos() {
-    const todos = await getAllTodos();
-    todoListEl.innerHTML = '';
-    
-    todos.forEach(todo => {
-        const li = document.createElement('li');
-        li.className = `todo-item ${todo.id === activeTodoId ? 'active' : ''} ${todo.completed ? 'task-completed' : ''}`;
+    try {
+        const todos = await getAllTodos();
+        todoListEl.innerHTML = '';
         
-        const safeTitle = escapeHtml(todo.title);
+        todos.forEach(todo => {
+            const li = document.createElement('li');
+            li.className = `todo-item ${todo.id === activeTodoId ? 'active' : ''} ${todo.completed ? 'task-completed' : ''}`;
+            
+            const safeTitle = escapeHtml(todo.title);
 
-        li.innerHTML = `
-            <label class="todo-content" onclick="selectTodo(${todo.id})" aria-label="Pilih tugas ${safeTitle}">
-                <input type="checkbox" onchange="toggleComplete(event, ${todo.id})" ${todo.completed ? 'checked' : ''} aria-label="Tandai ${safeTitle} selesai">
-                <span class="task-name">${safeTitle}</span>
-            </label>
-            <div class="todo-actions">
-                <button class="btn-small" onclick="selectTodo(${todo.id})" aria-label="Edit tugas ${safeTitle}">Edit</button>
-                <button class="btn-small btn-secondary" onclick="deleteTodo(${todo.id})" aria-label="Hapus tugas ${safeTitle}">Hapus</button>
-            </div>
-        `;
-        todoListEl.appendChild(li);
-    });
+            li.innerHTML = `
+                <label class="todo-content" onclick="selectTodo(${todo.id})" aria-label="Pilih tugas ${safeTitle}">
+                    <input type="checkbox" onchange="toggleComplete(event, ${todo.id})" ${todo.completed ? 'checked' : ''} aria-label="Tandai ${safeTitle} selesai">
+                    <span class="task-name">${safeTitle}</span>
+                </label>
+                <div class="todo-actions">
+                    <button class="btn-small" onclick="selectTodo(${todo.id})" aria-label="Edit tugas ${safeTitle}">Edit</button>
+                    <button class="btn-small btn-secondary" onclick="deleteTodo(${todo.id})" aria-label="Hapus tugas ${safeTitle}">Hapus</button>
+                </div>
+            `;
+            todoListEl.appendChild(li);
+        });
 
-    if (activeTodoId) fillEditorForm(activeTodoId);
+        if (activeTodoId) fillEditorForm(activeTodoId);
+    } catch (error) {
+        console.error("Gagal memuat daftar tugas:", error);
+        announceToScreenReader("Gagal memuat data dari database.");
+    }
 }
+
+function stopCameraStream() {
+    if (activeCameraStream) {
+        activeCameraStream.getTracks().forEach(track => track.stop());
+        activeCameraStream = null;
+    }
+}
+
+cameraCaptureBtn.addEventListener('click', async () => {
+    try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            throw new Error("Media Capture API tidak didukung oleh browser ini.");
+        }
+
+        activeCameraStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: 'environment' } 
+        });
+
+        stopCameraStream();
+        announceToScreenReader("Kamera berhasil diakses dan dihentikan.");
+        
+    } catch (error) {
+        console.warn("Media Capture API gagal atau izin ditolak. Beralih ke file input standar.", error);
+        stopCameraStream();
+        todoImageInput.click();
+    }
+});
 
 todoImageInput.addEventListener('change', function() {
     if (this.files && this.files.length > 0) {
@@ -122,6 +171,7 @@ todoImageInput.addEventListener('change', function() {
     } else {
         fileNameDisplay.textContent = 'Tidak ada file';
     }
+    stopCameraStream();
 });
 
 createForm.addEventListener('submit', async (e) => {
@@ -147,17 +197,32 @@ createForm.addEventListener('submit', async (e) => {
         notified: false
     };
 
-    await saveTodoToDB(newTodo);
-    
-    createForm.reset();
-    fileNameDisplay.textContent = 'Tidak ada file';
-    announceToScreenReader('Tugas baru berhasil dibuat.');
-    
-    if (notifyTime && Notification.permission !== "granted") {
-        Notification.requestPermission();
+    try {
+        await saveTodoToDB(newTodo);
+        createForm.reset();
+        fileNameDisplay.textContent = 'Tidak ada file';
+        announceToScreenReader('Tugas baru berhasil dibuat.');
+        renderTodos();
+    } catch (error) {
+        console.error("Gagal menyimpan tugas:", error);
+        announceToScreenReader("Gagal menyimpan tugas ke database.");
     }
     
-    renderTodos();
+});
+
+async function requestNotificationPermissionContextually() {
+    if (Notification.permission === "default") {
+        const permission = await Notification.requestPermission();
+        if (permission === "granted") {
+            announceToScreenReader("Izin notifikasi diaktifkan.");
+        } else {
+            announceToScreenReader("Izin notifikasi ditolak.");
+        }
+    }
+}
+
+todoTimeInput.addEventListener('focus', () => {
+    requestNotificationPermissionContextually();
 });
 
 function convertFileToBase64(file) {
@@ -176,46 +241,55 @@ window.selectTodo = async function(id) {
 };
 
 async function fillEditorForm(id) {
-    const todos = await getAllTodos();
-    const todo = todos.find(t => t.id === id);
-    if (!todo) return;
+    try {
+        const todos = await getAllTodos();
+        const todo = todos.find(t => t.id === id);
+        if (!todo) return;
 
-    editTitleInput.disabled = false;
-    editDescInput.disabled = false;
-    editStatusSelect.disabled = false;
-    saveTaskBtn.disabled = false;
-    deleteTaskBtn.disabled = false;
+        editTitleInput.disabled = false;
+        editDescInput.disabled = false;
+        editStatusSelect.disabled = false;
+        saveTaskBtn.disabled = false;
+        deleteTaskBtn.disabled = false;
 
-    editIdInput.value = todo.id;
-    editTitleInput.value = todo.title;
-    editDescInput.value = todo.desc || "";
-    editStatusSelect.value = todo.status;
+        editIdInput.value = todo.id;
+        editTitleInput.value = todo.title;
+        editDescInput.value = todo.desc || "";
+        editStatusSelect.value = todo.status;
 
-    if (todo.image) {
-        taskImagePreview.src = todo.image;
-        imagePreviewContainer.style.display = 'block';
-        imagePreviewContainer.setAttribute('aria-hidden', 'false');
-    } else {
-        imagePreviewContainer.style.display = 'none';
-        imagePreviewContainer.setAttribute('aria-hidden', 'true');
+        if (todo.image) {
+            taskImagePreview.src = todo.image;
+            imagePreviewContainer.style.display = 'block';
+            imagePreviewContainer.setAttribute('aria-hidden', 'false');
+        } else {
+            imagePreviewContainer.style.display = 'none';
+            imagePreviewContainer.setAttribute('aria-hidden', 'true');
+        }
+    } catch (error) {
+        console.error("Gagal memuat detail tugas:", error);
     }
 }
 
 editForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const id = parseInt(editIdInput.value);
-    const todos = await getAllTodos();
-    const todo = todos.find(t => t.id === id);
+    try {
+        const todos = await getAllTodos();
+        const todo = todos.find(t => t.id === id);
 
-    if (todo) {
-        todo.title = editTitleInput.value;
-        todo.desc = editDescInput.value;
-        todo.status = editStatusSelect.value;
-        todo.completed = (editStatusSelect.value === 'Completed');
-        
-        await saveTodoToDB(todo);
-        announceToScreenReader('Tugas berhasil diperbarui.');
-        renderTodos();
+        if (todo) {
+            todo.title = editTitleInput.value;
+            todo.desc = editDescInput.value;
+            todo.status = editStatusSelect.value;
+            todo.completed = (editStatusSelect.value === 'Completed');
+            
+            await saveTodoToDB(todo);
+            announceToScreenReader('Tugas berhasil diperbarui.');
+            renderTodos();
+        }
+    } catch (error) {
+        console.error("Gagal memperbarui tugas:", error);
+        announceToScreenReader("Gagal memperbarui tugas.");
     }
 });
 
@@ -227,32 +301,41 @@ deleteTaskBtn.addEventListener('click', async () => {
 });
 
 window.deleteTodo = async function(id) {
-    await deleteTodoFromDB(id);
-    if (activeTodoId === id) {
-        activeTodoId = null;
-        editForm.reset();
-        editTitleInput.disabled = true;
-        editDescInput.disabled = true;
-        editStatusSelect.disabled = true;
-        saveTaskBtn.disabled = true;
-        deleteTaskBtn.disabled = true;
-        imagePreviewContainer.style.display = 'none';
+    try {
+        await deleteTodoFromDB(id);
+        if (activeTodoId === id) {
+            activeTodoId = null;
+            editForm.reset();
+            editTitleInput.disabled = true;
+            editDescInput.disabled = true;
+            editStatusSelect.disabled = true;
+            saveTaskBtn.disabled = true;
+            deleteTaskBtn.disabled = true;
+            imagePreviewContainer.style.display = 'none';
+        }
+        announceToScreenReader('Tugas berhasil dihapus.');
+        renderTodos();
+    } catch (error) {
+        console.error("Gagal menghapus tugas:", error);
+        announceToScreenReader("Gagal menghapus tugas dari database.");
     }
-    announceToScreenReader('Tugas berhasil dihapus.');
-    renderTodos();
 };
 
 window.toggleComplete = async function(event, id) {
     event.stopPropagation();
-    const todos = await getAllTodos();
-    const todo = todos.find(t => t.id === id);
-    
-    if (todo) {
-        todo.completed = event.target.checked;
-        todo.status = todo.completed ? "Completed" : "In Progress";
-        await saveTodoToDB(todo);
-        announceToScreenReader(`Tugas ditandai sebagai ${todo.status}`);
-        renderTodos();
+    try {
+        const todos = await getAllTodos();
+        const todo = todos.find(t => t.id === id);
+        
+        if (todo) {
+            todo.completed = event.target.checked;
+            todo.status = todo.completed ? "Completed" : "In Progress";
+            await saveTodoToDB(todo);
+            announceToScreenReader(`Tugas ditandai sebagai ${todo.status}`);
+            renderTodos();
+        }
+    } catch (error) {
+        console.error("Gagal mengubah status tugas:", error);
     }
 };
 
@@ -265,29 +348,33 @@ if ('serviceWorker' in navigator) {
 }
 
 setInterval(async () => {
-    const todos = await getAllTodos();
-    const now = new Date().getTime();
+    try {
+        const todos = await getAllTodos();
+        const now = new Date().getTime();
 
-    todos.forEach(async (todo) => {
-        if (todo.notifyTime && !todo.notified && !todo.completed) {
-            const timeToNotify = new Date(todo.notifyTime).getTime();
-            
-            if (now >= timeToNotify) {
-                if (Notification.permission === 'granted') {
-                    navigator.serviceWorker.ready.then((reg) => {
-                        reg.showNotification('Pengingat Tugas!', {
-                            body: todo.title,
-                            icon: todo.image || null,
-                            vibrate: [200, 100, 200]
+        todos.forEach(async (todo) => {
+            if (todo.notifyTime && !todo.notified && !todo.completed) {
+                const timeToNotify = new Date(todo.notifyTime).getTime();
+                
+                if (now >= timeToNotify) {
+                    if (Notification.permission === 'granted') {
+                        navigator.serviceWorker.ready.then((reg) => {
+                            reg.showNotification('Pengingat Tugas!', {
+                                body: todo.title,
+                                icon: todo.image || null,
+                                vibrate: [200, 100, 200]
+                            });
                         });
-                    });
+                    }
+                    todo.notified = true; 
+                    await saveTodoToDB(todo);
                 }
-                todo.notified = true; 
-                await saveTodoToDB(todo);
             }
-        }
-    });
+        });
+    } catch (error) {
+        console.error("Error pada background interval notifikasi:", error);
+    }
 }, 30000);
 
 initTheme();
-initDB().then(() => renderTodos());
+initDB().then(() => renderTodos()).catch(err => console.error("Gagal menginisialisasi DB:", err));
