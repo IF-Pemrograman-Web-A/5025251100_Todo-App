@@ -56,16 +56,33 @@ function renderTodos() {
     todos.forEach(todo => {
         const li = document.createElement('li');
         li.className = `todo-item ${todo.id === activeTodoId ? 'active' : ''} ${todo.completed ? 'task-completed' : ''}`;
-        li.innerHTML = `
-            <label class="todo-content" onclick="selectTodo(${todo.id})">
-                <input type="checkbox" onchange="toggleComplete(event, ${todo.id})" ${todo.completed ? 'checked' : ''}>
-                <span class="task-name">${todo.title}</span>
-            </label>
-            <div class="todo-actions">
-                <button class="btn-small" onclick="selectTodo(${todo.id})">Edit</button>
-                <button class="btn-small btn-del" onclick="deleteTodo(${todo.id})">Delete</button>
-            </div>
-        `;
+        const label = document.createElement('label');
+        label.className = 'todo-content';
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = todo.completed;
+        checkbox.addEventListener('change', (e) => toggleComplete(e, todo.id));
+        checkbox.addEventListener('click', (e) => e.stopPropagation());
+        const span = document.createElement('span');
+        span.className = 'task-name';
+        span.textContent = todo.title;
+        span.addEventListener('click', () => selectTodo(todo.id));
+        label.appendChild(checkbox);
+        label.appendChild(span);
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'todo-actions';
+        const editBtn = document.createElement('button');
+        editBtn.className = 'btn-small';
+        editBtn.textContent = 'Edit';
+        editBtn.addEventListener('click', () => selectTodo(todo.id)); 
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn-small btn-del';
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.addEventListener('click', () => deleteTodo(todo.id)); 
+        actionsDiv.appendChild(editBtn);
+        actionsDiv.appendChild(deleteBtn);
+        li.appendChild(label);
+        li.appendChild(actionsDiv);
         todoListEl.appendChild(li);
     });
 
@@ -108,10 +125,10 @@ function fillEditorForm(id) {
     editStatusSelect.value = todo.status;
 }
 
-window.selectTodo = function(id) {
+function selectTodo(id) {
     activeTodoId = id;
     renderTodos(); 
-};
+}
 
 editForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -133,7 +150,7 @@ editForm.addEventListener('submit', (e) => {
     }
 });
 
-window.deleteTodo = function(id) {
+function deleteTodo(id) {
     todos = todos.filter(t => t.id !== id);
     
     if (activeTodoId === id) {
@@ -147,13 +164,13 @@ window.deleteTodo = function(id) {
     }
     
     renderTodos();
-};
+}
 
 deleteTaskBtn.addEventListener('click', () => {
     if (activeTodoId) deleteTodo(activeTodoId);
 });
 
-window.toggleComplete = function(event, id) {
+function toggleComplete(event, id) {
     event.stopPropagation(); 
     const todo = todos.find(t => t.id === id);
     if (todo) {
@@ -161,7 +178,7 @@ window.toggleComplete = function(event, id) {
         todo.status = todo.completed ? "Completed" : "In Progress";
         renderTodos();
     }
-};
+}
 
 themeToggleBtn.addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
