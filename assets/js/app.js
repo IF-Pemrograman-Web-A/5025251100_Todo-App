@@ -79,6 +79,7 @@ async function loadTodos() {
         listEl.replaceChildren();
         if (!data.length) listEl.append(el('li', { class: 'empty-state' }, 'Belum ada tugas di kategori ini.'));
         else data.forEach(t => listEl.append(renderItem(t)));
+        if (typeof checkReminders === 'function') checkReminders();
     } catch (err) {
         listEl.replaceChildren(el('li', { class: 'empty-state', role: 'alert' }, err.message));
     }
@@ -90,6 +91,9 @@ createForm.addEventListener('submit', async (e) => {
     form.set('type', TAB);
     if (!form.get('notify_time')) form.delete('notify_time');
     if (!form.get('todo_image') || !form.get('todo_image').size) form.delete('todo_image');
+    if (form.get('notify_time') && 'Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+    }
     try {
         await api('todos', { method: 'POST', form });
         createForm.reset();

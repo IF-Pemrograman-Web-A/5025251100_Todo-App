@@ -29,27 +29,40 @@ function getNotified() {
     try { return JSON.parse(localStorage.getItem('notified') || '[]'); } catch { return []; }
 }
 
-function checkReminders() {
-    if (!('Notification' in window) || Notification.permission !== 'granted') return;
-    const notified = getNotified();
+async function showReminder(title, options) {
+    const reg = navigator.serviceWorker
+        ? await Promise.race([navigator.serviceWorker.ready, new Promise(r => setTimeout(() => r(null), 3000))])
+        : null;
+    if (reg) return reg.showNotification(title, options);
+    new Notification(title, options);
+}
 
-    document.querySelectorAll('.todo-item[data-notify]').forEach(li => {
-        const id = li.dataset.id;
-        if (li.dataset.completed === '1' || notified.includes(id)) return;
+let checking = false;
+async function checkReminders() {
+    if (checking || !('Notification' in window) || Notification.permission !== 'granted') return;
+    checking = true;
+    try {
+        const notified = getNotified();
+        for (const li of document.querySelectorAll('.todo-item[data-notify]')) {
+            const key = `${li.dataset.id}@${li.dataset.notify}`;
+            if (li.dataset.completed === '1' || notified.includes(key)) continue;
 
-        const when = new Date(li.dataset.notify.replace(' ', 'T')).getTime();
-        if (Date.now() >= when) {
-            navigator.serviceWorker.ready.then(reg => {
-                reg.showNotification('Pengingat Tugas!', {
+            const when = new Date(li.dataset.notify.replace(' ', 'T')).getTime();
+            if (Date.now() >= when) {
+                await showReminder('Pengingat Tugas!', {
                     body: li.dataset.title,
-                    icon: 'assets/icons/yuhara-icon.svg',
-                    vibrate: [200, 100, 200]
+                    icon: 'assets/icons/maskable_icon_x192.png',   
+                    tag: key
                 });
-            });
-            notified.push(id);
-            localStorage.setItem('notified', JSON.stringify(notified));
+                notified.push(key);                                
+                localStorage.setItem('notified', JSON.stringify(notified));
+            }
         }
-    });
+    } catch (err) {
+        console.error('Pengingat gagal:', err);
+    } finally {
+        checking = false;
+    }
 }
 setInterval(checkReminders, 30000);
 checkReminders();

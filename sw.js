@@ -1,4 +1,4 @@
-const VERSION = 'v3';                       
+const VERSION = 'v4';                       
 const STATIC_CACHE = `mytodo-static-${VERSION}`;   
 const PAGES_CACHE  = `mytodo-pages-${VERSION}`;   
 const IMAGES_CACHE = `mytodo-images-${VERSION}`;   
