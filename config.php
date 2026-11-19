@@ -12,6 +12,11 @@ $options = [
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
 
+define('JWT_SECRET', 'ganti-dengan-string-acak-panjang');
+define('JWT_TTL', 60 * 60 * 24 * 1);
+define('UPLOAD_DIR', __DIR__ . '/assets/uploads/');
+define('MAX_UPLOAD_BYTES', 2 * 1024 * 1024);
+
 try {
     $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (\PDOException $e) {
