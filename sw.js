@@ -1,4 +1,4 @@
-const VERSION = 'v2';                       
+const VERSION = 'v3';                       
 const STATIC_CACHE = `mytodo-static-${VERSION}`;   
 const PAGES_CACHE  = `mytodo-pages-${VERSION}`;   
 const IMAGES_CACHE = `mytodo-images-${VERSION}`;   
@@ -8,7 +8,11 @@ const PRECACHE = [
   OFFLINE_URL,
   'index.php?tab=personal',
   'index.php?tab=shared',
+  'auth.html',
   'assets/css/style.css',
+  'assets/js/auth.js',
+  'assets/js/app.js',
+  'assets/js/login.js',
   'assets/js/script.js',
   'manifest.json',
   'assets/icons/yuhara-icon.svg'
@@ -63,10 +67,7 @@ self.addEventListener('fetch', event => {
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;
 
-  if (url.pathname.endsWith('delete.php')) {
-    event.respondWith(fetch(req).catch(() => caches.match(OFFLINE_URL)));
-    return;
-  }
+  if (url.pathname.includes('/api/')) return;
 
   if (req.mode === 'navigate') {
     event.respondWith(networkFirst(req));

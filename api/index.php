@@ -66,10 +66,7 @@ function list_todos(PDO $pdo, array $me) {
     $st->execute($args);
     $rows = $st->fetchAll();
 
-    respond(200, [
-        'data' => array_map(fn($r) => todo_json($r, $me['id']), $rows),
-        'meta' => ['count' => count($rows)],
-    ]);
+    respond(200, ['data' => array_map(fn($r) => todo_json($r, $me['id']), $rows), 'meta' => ['count' => count($rows)],]);
 }
 
 function create_todo(PDO $pdo, array $me) {
@@ -148,7 +145,6 @@ switch ($seg[0] ?? '') {
             if (!ctype_digit($seg[1])) fail(400, 'ID harus berupa angka.');
 
             $row = find_todo($pdo, (int)$seg[1]);
-            // Tugas personal milik orang lain disamarkan sebagai 404 (tidak membocorkan keberadaannya)
             if (!$row || ($row['type'] === 'personal' && (int)$row['user_id'] !== $me['id'])) {
                 fail(404, 'Tugas tidak ditemukan.');
             }

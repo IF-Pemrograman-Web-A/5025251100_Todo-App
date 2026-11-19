@@ -598,3 +598,107 @@ h2
     font-size: 0.8rem;
     color: var(--text-muted);
 }
+
+[hidden] { display: none !important; }
+
+.account-menu { position: relative; }
+
+.account-panel {
+    position: absolute; 
+    right: 0; 
+    top: calc(100% + .5rem); 
+    z-index: 50;
+    min-width: 260px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: .25rem;
+    padding: .75rem; 
+    text-align: left;
+    background: var(--panel-bg); 
+    color: var(--text-main);
+    border: 1px solid var(--border); 
+    border-radius: .75rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, .2);
+}
+
+.account-label { 
+    margin: 0 0 .25rem; 
+    font-size: .75rem; 
+    font-weight: 600; 
+    text-transform: uppercase; 
+    color: var(--text-muted); 
+}
+
+.account-item, .account-action {
+    display: flex; 
+    flex-direction: column; 
+    align-items: flex-start; 
+    width: 100%;
+    padding: .6rem .75rem; 
+    background: transparent; 
+    color: var(--text-main);
+    border: 1px solid transparent; 
+    border-radius: .5rem;
+    font-weight: 500; 
+    text-align: left; 
+    text-decoration: none; 
+    cursor: pointer;
+}
+.account-item small { 
+    color: var(--text-muted); 
+    font-weight: 400; 
+}
+
+.account-item:hover, .account-action:hover { background: var(--bg-color); }
+
+.account-item.current { border-color: var(--primary); }
+
+.account-action { color: var(--primary); }
+
+.auth-card {
+    width: calc(100% - 2rem); 
+    max-width: 420px; 
+    margin: 2rem auto; 
+    padding: 1.5rem;
+    box-sizing: border-box; 
+    background: var(--panel-bg);
+    border: 1px solid var(--border); 
+    border-radius: .75rem;
+}
+.auth-tabs { 
+    display: flex; 
+    gap: .5rem; 
+    margin-bottom: 1rem; 
+}
+
+.auth-tabs button { 
+    flex: 1; 
+    background: transparent; 
+    color: var(--primary); 
+    border: 2px solid var(--primary); 
+}
+
+.auth-tabs button:hover, .auth-tabs button[aria-pressed="true"] { 
+    background: var(--primary); 
+    color: #fff; 
+}
+
+.auth-card form button[type="submit"] { width: 100%; }
+
+.flash { 
+    padding: .75rem 1rem; 
+    border: 1px solid var(--primary); 
+    border-radius: .5rem; 
+    background: var(--panel-bg); 
+    color: var(--text-main); 
+}
+
+.flash-error { 
+    border-color: var(--danger); 
+    color: var(--danger); 
+}
+
+.empty-state { 
+    list-style: none; 
+    color: var(--text-muted); 
+}
