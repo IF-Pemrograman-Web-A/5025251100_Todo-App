@@ -17,7 +17,7 @@ function el(tag, attrs = {}, ...children) {
         else if (k === 'class') node.className = v;
         else node.setAttribute(k, v === true ? '' : v);
     }
-    node.append(...children);
+    node.append(...children.filter(c => c !== false && c != null));
     return node;
 }
 
@@ -164,9 +164,9 @@ function renderAccountMenu() {
         }),
         el('a', { class: 'account-action', href: 'auth.html?add=1' }, '+ Tambah akun'),
         el('button', { type: 'button', class: 'account-action', onclick: () => logout(false) }, 'Keluar dari akun ini'),
-        state.list.length > 1
+        (state.list.length > 1
             ? el('button', { type: 'button', class: 'account-action', onclick: () => logout(true) }, 'Keluar dari semua akun')
-            : false
+            : [])
     );
 }
 
