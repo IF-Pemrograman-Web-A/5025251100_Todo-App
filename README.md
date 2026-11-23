@@ -1,113 +1,111 @@
-# MyTodo Organizational App - Personal Task Manager
-
-Aplikasi manajemen tugas (Todo List) berbasis **PHP, MySQL, dan CSS3** yang mendukung pengelolaan tugas secara **Personal** maupun **Shared (Organisasi)**. Aplikasi ini dikembangkan sebagai tugas lanjutan untuk mata kuliah Pemrograman Web.
-
----
-
-## Identitas
-
-|    NRP     |         Nama          |    Kelas    |
-| :--------: | :-------------------: | :---------: |
-| 5025251100 | Yudith Hafiz Rabbani  |      A      |
-
----
-
 ## Deskripsi
 
 ### Gambaran Umum
-**MyTodo** telah bertransformasi dari aplikasi *client-side* berbasis IndexedDB menjadi **Aplikasi Web berbasis Server (PHP & MySQL)** yang modular. Aplikasi ini mengusung arsitektur modular PHP, integrasi basis data relasional, pemrosesan unggah file gambar (*File Handling*), serta navigasi navigasi ganda (**Personal** & **Shared**) untuk kolaborasi organisasi.
 
-Aplikasi ini tetap mempertahankan desain antarmuka dua panel yang responsif, fitur *Toggle Light/Dark Mode*, dan standar aksesibilitas berbasis **ARIA**.
-
----
-
-## Struktur File Modular
-
-Proyek ini dibangun secara modular untuk memudahkan pengelolaan komponen dan integrasi database:
-
-- **`config.php`**: Menyimpan konfigurasi koneksi ke basis data MySQL/MariaDB menggunakan PDO.
-- **`index.php`**: Halaman utama yang berfungsi sebagai pendorong logika CRUD, pemrosesan *form* tambah tugas, dan router tampilan data berdasarkan tab aktif.
-- **`menubar.php`**: Komponen modular *sidebar* navigasi untuk memilah kategori tugas (**Personal** dan **Shared**).
-- **`delete.php`**: Script penanganan proses hapus data tugas dari database sekaligus pembersihan file fisik gambar di server.
-- **`data.sql`**: Berkas skema struktur tabel basis data dan data awal dummy.
-- **`assets/css/style.css`**: Menyimpan variabel warna (Light/Dark mode), tata letak Flexbox/Grid, serta *responsive breakpoints*.
-- **`assets/uploads/`**: Direktori penyimpanan file bukti foto tugas (*File Handling*).
-- **`manifest.json`** : Web App Manifest (nama, ikon, theme color, start_url)
-- **`sw.js`**         : Service Worker (precache app shell + strategi caching)
-- **`offline.html`**  : Halaman fallback saat offline
-- **`assets/icons/`** : Ikon 192, 512, dan maskable
-- **`assets/js/script.js`** : Tema, notifikasi, registrasi SW, tombol install
+**MyTodo** adalah aplikasi web todo list berbasis **PHP, MySQL, dan JavaScript** dengan **REST API**, **autentikasi JWT**, dukungan **multi-akun**, serta **Progressive Web App** (bisa diinstal dan berjalan offline). Tugas dikelola secara **Personal** (privat per akun) maupun **Shared** (kolaborasi antar akun).
 
 ---
 
-## Fitur & Alur Kerja Utama
+## Struktur File
 
-### 1. Sistem Navigasi Modular (Personal vs Shared)
-- **Personal Tugas**: Menampilkan daftar tugas pribadi yang dimiliki pengguna.
-- **Shared Tugas (Organisasi)**: Menampilkan tugas-tugas kolaborasi tim/organisasi.
-- Navigasi dibuat modular melalui `menubar.php` sehingga mudah dikembangkan lebih lanjut.
-
-### 2. Implementasi CRUD (Create, Read, Delete)
-- **Create**: Memasukkan tugas baru lengkap dengan judul, jadwal notifikasi, dan kategori (*Personal/Shared*).
-- **Read**: Membaca dan menampilkan daftar tugas sesuai kategori yang sedang dipilih dari database `db_mytodo`.
-- **Delete**: Menghapus data tugas dari database relasional.
-
-### 3. Pemrosesan Unggah File (*File Handling*)
-- Pengguna dapat mengunggah bukti foto untuk setiap tugas (`.jpg`, `.jpeg`, `.png`, `.gif`).
-- File akan disimpan secara fisik ke direktori `assets/uploads/` dengan penamaan terenkripsi acak (menggunakan `md5(time())`).
-- Saat tugas dihapus, script secara otomatis akan menghapus file fisik di server menggunakan fungsi `unlink()` untuk menghemat ruang penyimpanan.
-
-### 4. Aksesibilitas (ARIA) & Tema Responsif
-- Memanfaatkan atribut `aria-label`, `aria-required`, dan `role` untuk mendukung *Screen Reader*.
-- Fitur *Toggle Light/Dark Mode* yang responsif dan nyaman digunakan di berbagai ukuran layar.
-
-### 5. Caching
-- Memungkinkan pengguna untuk bisa mengakses halaman yang sudah dicache dalam keadaan tanpa jaringan. Dengan Caching strategy demikian:
-
-|Resource |	Strategi |	Alasan|
-|:-------:|:--------:|:------:|
-|`offline.html`, CSS, JS, manifest, ikon | Precache + Stale-While-Revalidate | Inti app shell, harus selalu tersedia|
-|Halaman `index.php` | Network-First, fallback cache, lalu `offline.html` | Data dari DB harus fresh|
-|Foto di `assets/uploads/` | Cache-First | Nama file md5 tidak berubah|
-|POST, `delete.php` | Network-only | Tulis/hapus data tidak boleh dari cache|
+- **`config.php`**: Koneksi PDO ke MySQL, secret JWT, masa berlaku token, batas upload.
+- **`data.sql`**: Skema tabel `users` dan `todos` beserta data demo.
+- **`api/index.php`**: Router REST API dan handler (auth + CRUD todo).
+- **`api/helpers.php`**: Fungsi bantu: respons JSON, JWT, validasi, upload.
+- **`api/.htaccess`**: URL bersih dan penerusan header `Authorization`.
+- **`index.php`**: Cangkang halaman utama; data diambil lewat `fetch` ke API.
+- **`menubar.php`**: Sidebar navigasi Personal / Shared.
+- **`auth.html`**: Halaman masuk, daftar, dan tambah akun.
+- **`assets/js/auth.js`**: Penyimpanan multi-akun dan fungsi `api()`.
+- **`assets/js/app.js`**: UI tugas (list, buat, edit, hapus) dan menu akun.
+- **`assets/js/login.js`**: Logika halaman masuk/daftar.
+- **`assets/js/script.js`**: Tema, notifikasi pengingat, registrasi SW, tombol install.
+- **`assets/css/style.css`**: Variabel tema, tata letak, komponen.
+- **`manifest.json`, `sw.js`, `offline.html`, `assets/icons/`**: Komponen PWA (E05).
+- **`assets/uploads/`**: Foto bukti tugas.
 
 ---
 
-## Preview Todo App
-![desc](assets/desc.png)
+## Fitur
 
-### Preview Fitur Create (New Sekarang bisa dipakai walau belum persistent)
-![create](assets/create.png)
+### Akun & Autentikasi
+- Daftar dan masuk lewat `POST /api/auth/register` dan `/api/auth/login`; server mengembalikan **JWT (HS256)** yang berlaku **24 jam**. Password disimpan sebagai hash (`password_hash`).
+- Multi-akun: **tambah akun**, **ganti akun** tanpa login ulang, **keluar** dari satu atau semua akun.
+- Tugas **Personal** hanya terlihat pemiliknya. Tugas **Shared** terlihat semua akun; hanya pemilik yang boleh mengedit/menghapus, anggota lain hanya boleh mengubah status.
 
-### Preview Fitur List
-![list](assets/list.png)
+### CRUD lewat REST API
+- Create (`POST`), Read (`GET`), Update penuh (`PUT`), Update sebagian (`PATCH`), Delete (`DELETE`).
 
-### Preview Fitur Editor
-![editor](assets/editor.png)
+### Unggah File
+- Format JPG/PNG/GIF, maksimal 2 MB, isi file divalidasi (bukan hanya ekstensi).
+- Disimpan dengan nama acak (`random_bytes`); file fisik dihapus otomatis saat tugas dihapus.
 
-### Preview Toggle Light/Dark (New)
-![toggle](assets/toggle_button.png)
+### Caching 
+| Resource | Strategi | Alasan |
+|:--|:--|:--|
+| `offline.html`, CSS, JS, manifest, ikon | Precache + Stale-While-Revalidate | Inti app shell |
+| Halaman `index.php`, `auth.html` | Network-First, fallback cache, lalu `offline.html` | Halaman selalu terbaru |
+| Foto di `assets/uploads/` | Cache-First | Nama file acak, isinya tidak berubah |
+| `/api/*` dan method selain GET | **Network-only** | Cache dikunci per URL, bukan per akun, sehingga berisiko membocorkan data antar-akun |
 
-### Preview Edit/Delete (New)
-![newbutton](assets/editdeletebutton.png)
+---
 
-### Preview Pelengkap fitur Add
-![pelengkap](assets/complete.png)
+### Endpoint
+| Method | Endpoint | Auth | Fungsi |
+|:--|:--|:-:|:--|
+| POST | `/auth/register` | - | Buat akun, mengembalikan token |
+| POST | `/auth/login` | - | Masuk, mengembalikan token |
+| GET | `/auth/me` | ✔ | Profil akun aktif |
+| GET | `/todos?type=personal\|shared` | ✔ | Daftar tugas (opsional `&status=`) |
+| POST | `/todos` | ✔ | Buat tugas (JSON atau form-data + foto) |
+| GET | `/todos/{id}` | ✔ | Detail satu tugas |
+| PUT | `/todos/{id}` | ✔ | Ganti penuh (`title`, `description`, `status` wajib) |
+| PATCH | `/todos/{id}` | ✔ | Ubah sebagian (mis. `{"completed": true}`) |
+| DELETE | `/todos/{id}` | ✔ | Hapus tugas |
 
-### Preview Aria Accessibility
-![aria](assets/aria.png)
+### Kode Respons
+| Endpoint | Sukses | Gagal |
+|:--|:--|:--|
+| `POST /auth/register` | **201** + token | 400 JSON rusak · 409 email sudah ada · 415 · 422 |
+| `POST /auth/login` | **200** + token | 400 · 401 kredensial salah · 415 · 422 |
+| `GET /auth/me` | **200** | 401 |
+| `GET /todos` | **200** | 401 · 422 parameter salah |
+| `POST /todos` | **201** + `Location` | 400 · 401 · 413 gambar >2 MB · 415 format salah · 422 |
+| `GET /todos/{id}` | **200** | 400 id bukan angka · 401 · 404 |
+| `PUT` / `PATCH /todos/{id}` | **200** | 400 · 401 · 403 bukan pemilik · 404 · 415 · 422 |
+| `DELETE /todos/{id}` | **204** tanpa body | 401 · 403 bukan pemilik · 404 |
+| Semua endpoint | | 404 rute tidak ada · 405 method salah (+ `Allow`) · 500 error server |
 
-### Preview Menu Navigasi
-![navigasi](assets/navigasi.png)
+### Format Respons
+Sukses: `{ "data": { ... } }` (daftar: `{ "data": [ ... ], "meta": { "count": 3 } }`)
 
-### Preview Download
-![download](assets/download.png)
+Error (seragam di semua endpoint):
+```json
+{ "error": { "status": 422, "message": "Data tidak valid.", "details": { "title": "Judul wajib diisi (maksimal 255 karakter)." } } }
+```
 
-### Preview Caching
-![cache](assets/cache.png)
+### Aturan Hak Akses
+- Tugas personal milik akun lain dijawab **404** (keberadaannya disamarkan).
+- Tugas shared milik akun lain: `GET` dan `PATCH` status boleh; `PUT` dan `DELETE` dijawab **403**.
 
-### Preview Offline Page
-![offline](assets/offline.png)
+### Bukti Pengujian 
+- Registrasi
+![register 201](assets/api-register-201.png)
+- Login
+![login 200](assets/api-login-200.png)
+- Tambahkan tugas
+![create 201](assets/api-create-201.png)
+- Validasi data tidak valid
+![validasi 422](assets/api-validation-422.png)
+- Pelanggaran hak akses
+![forbidden 403](assets/api-forbidden-403.png)
+- Hapus tugas
+![delete 204](assets/api-delete-204.png)
 
-### URL Website
-[Klik disini](https://if-pemrograman-web-a.github.io/5025251100_Todo-App/)
+### Bukti Fitur Akun
+- Masuk/Daftar
+![halaman masuk](assets/auth-page.png)
+- Ganti Akun
+![menu ganti akun](assets/account-menu.png)
+- Tugas
+![shared: tombol edit/hapus hanya untuk pemilik](assets/shared-permission.png)
