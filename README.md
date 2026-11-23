@@ -21,7 +21,7 @@
 - **`assets/js/login.js`**: Logika halaman masuk/daftar.
 - **`assets/js/script.js`**: Tema, notifikasi pengingat, registrasi SW, tombol install.
 - **`assets/css/style.css`**: Variabel tema, tata letak, komponen.
-- **`manifest.json`, `sw.js`, `offline.html`, `assets/icons/`**: Komponen PWA (E05).
+- **`manifest.json`, `sw.js`, `offline.html`, `assets/icons/`**: Komponen PWA.
 - **`assets/uploads/`**: Foto bukti tugas.
 
 ---
